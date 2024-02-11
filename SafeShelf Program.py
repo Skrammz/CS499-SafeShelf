@@ -1,19 +1,20 @@
 import pandas as pd
-import plotly.graph_objects as go # or plotly.express as px
 import plotly.express as px
-from dash import Dash, html, dcc
+import plotly.graph_objects as go # or plotly.express as px
+from collections import OrderedDict
+from dash import * 
+import dash_bootstrap_components as dbc
 import csv
 from pathlib import Path
 
 csv = 'recallsPerState.csv'
-df = pd.read_csv(csv, sep=',')
+df = pd.read_csv(csv)
 
 activeMap = go.Figure(data=go.Choropleth(
     locations=df['Postal'], # Spatial coordinates
     z = df['Active'].astype(float), # Data to be color-coded
     locationmode = 'USA-states', # set of locations match entries in `locations`
     colorscale = 'Sunsetdark',
-    colorbar_title = "Active Recalls per State",
 ))
 activeMap.update_layout(
     title_text = 'Active Recalls per State',
@@ -25,35 +26,56 @@ closedMap = go.Figure(data=go.Choropleth(
     z = df['Closed'].astype(float), # Data to be color-coded
     locationmode = 'USA-states', # set of locations match entries in `locations`
     colorscale = 'Emrld',
-    colorbar_title = "Closed Recalls per State",
 ))
 closedMap.update_layout(
     title_text = 'Closed Recalls per State',
     geo_scope='usa', # limite map scope to USA
 )
 
-df = pd.read_csv(csv)
-def generate_table(dataframe, max_rows=51):
-    return html.Table([
-        html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns])
-        ),
-        html.Tbody([
-            html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-            ]) for i in range(min(len(dataframe), max_rows))
-        ])
-    ])
+data = pd.read_csv('recallsPerState.csv')
+recallTable = pd.DataFrame(OrderedDict([(name, col_data) for (name, col_data) in data.items()]))
 
-app = Dash(__name__)
 
-app.layout = html.Div([
-    html.H1(children='SafeShelf: Your Recall Buddy', style={'textAlign':'left'}),
-    html.H4(children='USDA FSIS Recalls'),
-    generate_table(df),
-    dcc.Graph(figure=activeMap, responsive=True), #responsive refers to size
-    dcc.Graph(figure=closedMap, responsive=True)  #responsive refers to size
-])
+colors = {
+    'safeShelfGreen': '#00bf63'
+}
 
+app = Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+app.layout = html.Div(
+    dbc.Container([
+        dbc.Row( 
+            dbc.Col(
+            html.Div(children=[html.H1(children='SafeShelf: Your Recall Buddy')],
+            style={ 'textAlign': 'left', 'color': colors['safeShelfGreen']}),
+                )
+            ),
+        dbc.Row([
+                dbc.Col(
+                    html.Div(children=['USDA FSIS Recalls',
+                        dash_table.DataTable(
+                            data=df.to_dict('records'),
+                            columns=[{'id': c, 'name': c} for c in df.columns],
+                            fixed_rows={'headers': True},
+                            style_table={'height': 500}  # defaults to 500
+                            )               
+                        ]), width={'size':6},
+                    ),
+                
+                dbc.Col(
+                    dbc.Tabs([
+                        dbc.Tab(label="ActiveMap", tab_id="Active Recall Map", children=[
+                            dcc.Graph(figure=activeMap)
+                            ]),
+                        dbc.Tab(label="ClosedMap", tab_id="Closed Recall Map", children=[
+                            dcc.Graph(figure=closedMap)
+                            ]),
+                        ]), width={'size':6},
+                    ),
+            ]
+        )
+    ]), style={'width': '100%', 'display': 'block'},
+)
+    
 if __name__ == '__main__':
     app.run(debug=True)
