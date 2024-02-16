@@ -10,6 +10,9 @@ from pathlib import Path
 csv = 'recallsPerState.csv'
 df = pd.read_csv(csv)
 
+na = df['Nationwide Active'].astype(float)
+nationwideActive = int(na.sum())
+
 activeMap = go.Figure(data=go.Choropleth(
     locations=df['Postal'], # Spatial coordinates
     z = df['Active'].astype(float), # Data to be color-coded
@@ -17,9 +20,12 @@ activeMap = go.Figure(data=go.Choropleth(
     colorscale = 'Sunsetdark',
 ))
 activeMap.update_layout(
-    title_text = 'Active Recalls per State',
+    title_text = 'Active Recalls per State<br><sup>Active Nationwide Recalls: '+str(nationwideActive),
     geo_scope='usa', # limite map scope to USA
 )
+
+nc = df['Nationwide Closed'].astype(float)
+nationwideClosed = int(nc.sum())
 
 closedMap = go.Figure(data=go.Choropleth(
     locations=df['Postal'], # Spatial coordinates
@@ -28,7 +34,7 @@ closedMap = go.Figure(data=go.Choropleth(
     colorscale = 'Emrld',
 ))
 closedMap.update_layout(
-    title_text = 'Closed Recalls per State',
+    title_text = 'Closed Recalls per State<br><sup>Closed Nationwide Recalls: '+str(nationwideClosed),
     geo_scope='usa', # limite map scope to USA
 )
 
@@ -41,6 +47,8 @@ colors = {
 }
 
 app = Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+df = df.iloc[:,0:4]
 
 app.layout = html.Div(
     dbc.Container([
