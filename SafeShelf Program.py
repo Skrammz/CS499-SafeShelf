@@ -41,7 +41,6 @@ closedMap.update_layout(
 data = pd.read_csv('recallsPerState.csv')
 recallTable = pd.DataFrame(OrderedDict([(name, col_data) for (name, col_data) in data.items()]))
 
-
 colors = {
     'safeShelfGreen': '#00bf63'
 }
@@ -57,7 +56,7 @@ app.layout = html.Div(
             html.Div(children=[html.H1(children='SafeShelf: Your Recall Buddy')],
             style={ 'textAlign': 'left', 'color': colors['safeShelfGreen']}),
                 )
-            ),
+        ),
         dbc.Row([
                 dbc.Col(
                     html.Div(children=['USDA FSIS Recalls',
@@ -65,9 +64,12 @@ app.layout = html.Div(
                             data=df.to_dict('records'),
                             columns=[{'id': c, 'name': c} for c in df.columns],
                             fixed_rows={'headers': True},
-                            style_table={'height': 500}  # defaults to 500
-                            )               
-                        ]), width={'size':6},
+                            style_table={'height': 500},  # defaults to 500
+                            sort_action="native",
+                            sort_mode="multi",
+                            column_selectable="single",
+                            )]), 
+                            width={'size':6},
                     ),
                 
                 dbc.Col(
@@ -84,6 +86,6 @@ app.layout = html.Div(
         )
     ]), style={'width': '100%', 'display': 'block'},
 )
-    
+
 if __name__ == '__main__':
     app.run(debug=True)
