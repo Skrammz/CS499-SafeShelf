@@ -39,14 +39,12 @@ closedMap.update_layout(
 )
 
 data = pd.read_csv('recallsPerState.csv')
-recallTable = pd.DataFrame(OrderedDict([(name, col_data) for (name, col_data) in data.items()]))
 
 colors = {
     'safeShelfGreen': '#00bf63'
 }
 
 app = Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
-
 df = df.iloc[:,0:4]
 
 app.layout = html.Div(
@@ -61,13 +59,18 @@ app.layout = html.Div(
                 dbc.Col(
                     html.Div(children=['USDA FSIS Recalls',
                         dash_table.DataTable(
+                            id="datatable",
                             data=df.to_dict('records'),
-                            columns=[{'id': c, 'name': c} for c in df.columns],
+                            columns=[{'id': c, 'name': c, } for c in df.columns],
                             fixed_rows={'headers': True},
                             style_table={'height': 500},  # defaults to 500
                             sort_action="native",
-                            sort_mode="multi",
+                            filter_action="native",
+                            filter_options={"placeholder_text": "Search by..."},
+                            sort_mode="single",
                             column_selectable="single",
+                            style_cell={
+                            'minWidth': '80px', 'width': '100px', 'maxWidth': '140px'}
                             )]), 
                             width={'size':6},
                     ),
@@ -75,10 +78,10 @@ app.layout = html.Div(
                 dbc.Col(
                     dbc.Tabs([
                         dbc.Tab(label="ActiveMap", tab_id="Active Recall Map", children=[
-                            dcc.Graph(figure=activeMap)
+                            dcc.Graph(figure=activeMap, id='active-map')
                             ]),
                         dbc.Tab(label="ClosedMap", tab_id="Closed Recall Map", children=[
-                            dcc.Graph(figure=closedMap)
+                            dcc.Graph(figure=closedMap, id='closed-map')
                             ]),
                         ]), width={'size':6},
                     ),
@@ -86,6 +89,21 @@ app.layout = html.Div(
         )
     ]), style={'width': '100%', 'display': 'block'},
 )
+
+@app.callback(
+    Output('datatable', 'data'),
+    [Input('active-map', 'clickData')]
+)
+def update_table(active_select):
+    if active_select is None:
+        return df.to_dict('records')
+    else:
+        clicked_state = active_select['points'][0]['location']
+        sdf = data[data['Postal'] == clicked_state]
+        return sdf.to_dict('records')
+      
+def reset_select():
+    clicked_state = None
 
 if __name__ == '__main__':
     app.run(debug=True)
