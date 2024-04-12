@@ -78,10 +78,12 @@ app.layout = html.Div(
                 dbc.Col(
                     dbc.Tabs([
                         dbc.Tab(label="ActiveMap", tab_id="Active Recall Map", children=[
-                            dcc.Graph(figure=activeMap, id='active-map')
+                            dcc.Graph(figure=activeMap, id='active-map'),
+                            html.Button('Clear State', id='clearActive')
                             ]),
                         dbc.Tab(label="ClosedMap", tab_id="Closed Recall Map", children=[
-                            dcc.Graph(figure=closedMap, id='closed-map')
+                            dcc.Graph(figure=closedMap, id='closed-map'),
+                            html.Button('Clear State', id='clearClosed')
                             ]),
                         ]), width={'size':6},
                     ),
@@ -105,6 +107,13 @@ def update_active_table(active_select):
     
 @app.callback(
     Output('datatable', 'data'),
+    Input('clearActive', 'n_clicks'),
+)
+def reset_graph(n_clicks):
+    return df.to_dict('records')
+
+@app.callback(
+    Output('datatable', 'data'),
     [Input('closed-map', 'clickData')]
 )  
 def update_closed_table(closed_select):
@@ -114,6 +123,13 @@ def update_closed_table(closed_select):
         clicked_state = closed_select['points'][0]['location']
         sdf = data[data['Postal'] == clicked_state]
         return sdf.to_dict('records')
+    
+@callback(
+    Output('datatable', 'data'),
+    Input('clearClosed', 'n_clicks'),
+)
+def reset_graph(n_clicks):
+    return df.to_dict('records')
 
 if __name__ == '__main__':
     app.run(debug=True)
