@@ -91,19 +91,29 @@ app.layout = html.Div(
 )
 
 @app.callback(
-    Output('datatable', 'data'),
-    [Input('active-map', 'clickData')]
+    Output('datatable', 'data', allow_duplicate=True),
+    Input('active-map', 'clickData'),
+    prevent_initial_call=True
 )
-def update_table(active_select):
+def update_active_table(active_select):
     if active_select is None:
         return df.to_dict('records')
     else:
         clicked_state = active_select['points'][0]['location']
         sdf = data[data['Postal'] == clicked_state]
         return sdf.to_dict('records')
-      
-def reset_select():
-    clicked_state = None
+    
+@app.callback(
+    Output('datatable', 'data'),
+    [Input('closed-map', 'clickData')]
+)  
+def update_closed_table(closed_select):
+    if closed_select is None:
+        return df.to_dict('records')
+    else:
+        clicked_state = closed_select['points'][0]['location']
+        sdf = data[data['Postal'] == clicked_state]
+        return sdf.to_dict('records')
 
 if __name__ == '__main__':
     app.run(debug=True)
