@@ -6,6 +6,7 @@ from dash import *
 import dash_bootstrap_components as dbc
 import csv
 from pathlib import Path
+import flask
 
 csv = 'recallsPerState.csv'
 df = pd.read_csv(csv)
@@ -51,10 +52,11 @@ app.layout = html.Div(
     dbc.Container([
         dbc.Row( 
             dbc.Col(
-            html.Div(children=[html.H1(children='SafeShelf: Your Recall Buddy')],
+            html.Div(children=[html.H1(children='SafeShelf: Your Recall Buddy',)],
             style={ 'textAlign': 'left', 'color': colors['safeShelfGreen']}),
                 )
         ),
+        
         dbc.Row([
                 dbc.Col(
                     html.Div(children=['USDA FSIS Recalls',
@@ -79,17 +81,35 @@ app.layout = html.Div(
                     dbc.Tabs([
                         dbc.Tab(label="ActiveMap", tab_id="Active Recall Map", children=[
                             dcc.Graph(figure=activeMap, id='active-map'),
-                            html.Button('Clear State', id='clearActive')
+                            html.Div([
+                                dbc.Button('View All States', id='clearActive', color="primary"),
+                            ],  style={'margin-bottom': '10px',
+                                'textAlign':'center',
+                                'width': '220px',
+                                'margin':'auto'}
+                            )
                             ]),
                         dbc.Tab(label="ClosedMap", tab_id="Closed Recall Map", children=[
                             dcc.Graph(figure=closedMap, id='closed-map'),
-                            html.Button('Clear State', id='clearClosed')
+                            html.Div([
+                                dbc.Button('View All States', id='clearClosed', color="primary"),
+                            ],  style={'margin-bottom': '10px',
+                                'textAlign':'center',
+                                'width': '220px',
+                                'margin':'auto'}
+                            )
                             ]),
                         ]), width={'size':6},
                     ),
-            ]
-        )
+            ]),
+        dbc.Row([
+            html.Div(children=[dbc.Button("Need Help? Download the User Manual", 
+                    color="link", href="SafeShelf Logo.png", download="SafeShelf Logo.png",
+                    external_link= True,),
+                ])
+            ]),
     ]), style={'width': '100%', 'display': 'block'},
+    
 )
 
 @app.callback(
@@ -105,16 +125,18 @@ def update_active_table(active_select):
         sdf = data[data['Postal'] == clicked_state]
         return sdf.to_dict('records')
     
-@app.callback(
-    Output('datatable', 'data'),
+@callback(
+    Output('datatable', 'data', allow_duplicate=True),
     Input('clearActive', 'n_clicks'),
+    prevent_initial_call=True
 )
 def reset_graph(n_clicks):
     return df.to_dict('records')
 
-@app.callback(
-    Output('datatable', 'data'),
-    [Input('closed-map', 'clickData')]
+@callback(
+    Output('datatable', 'data', allow_duplicate=True),
+    [Input('closed-map', 'clickData')],
+    prevent_initial_call=True
 )  
 def update_closed_table(closed_select):
     if closed_select is None:
@@ -125,8 +147,9 @@ def update_closed_table(closed_select):
         return sdf.to_dict('records')
     
 @callback(
-    Output('datatable', 'data'),
+    Output('datatable', 'data', allow_duplicate=True),
     Input('clearClosed', 'n_clicks'),
+    prevent_initial_call=True
 )
 def reset_graph(n_clicks):
     return df.to_dict('records')
