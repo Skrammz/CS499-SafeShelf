@@ -122,7 +122,6 @@ def writeClosed():
 
 #print(closedStates)
 readCSV()
-print(writeActive())
-print(writeClosed())
+writeActive()
 writeClosed()
 print(states)
