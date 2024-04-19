@@ -118,6 +118,67 @@ app.layout = html.Div(
     ]), style={'width': '100%', 'display': 'block'},
 )
 
+us_state_to_abbrev = {
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Hawaii": "HI",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY",
+    "District of Columbia": "DC",
+    "American Samoa": "AS",
+    "Guam": "GU",
+    "Northern Mariana Islands": "MP",
+    "Puerto Rico": "PR",
+    "United States Minor Outlying Islands": "UM",
+    "U.S. Virgin Islands": "VI",
+}
+abbrev_to_us_state = dict(map(reversed, us_state_to_abbrev.items()))
+
 @app.callback(
     Output('datatable', 'data', allow_duplicate=True),
     Input('active-map', 'clickData'),
@@ -128,8 +189,10 @@ def update_active_table(active_select):
         return df.to_dict('records')
     else:
         clicked_state = active_select['points'][0]['location']
-        sdf = data[data['Postal'] == clicked_state]
-        return sdf.to_dict('records')
+        sdf = data[data['State'] == clicked_state]
+        stateName = abbrev_to_us_state.get(clicked_state)
+        filtered_df = df.loc[df['States'] == stateName]
+        return filtered_df.to_dict('records')
     
 @callback(
     Output('datatable', 'data', allow_duplicate=True),
@@ -149,8 +212,10 @@ def update_closed_table(closed_select):
         return df.to_dict('records')
     else:
         clicked_state = closed_select['points'][0]['location']
-        sdf = data[data['Postal'] == clicked_state]
-        return sdf.to_dict('records')
+        sdf = data[data['State'] == clicked_state]
+        stateName = abbrev_to_us_state.get(clicked_state)
+        filtered_df = df.loc[df['States'] == stateName]
+        return filtered_df.to_dict('records')
     
 @callback(
     Output('datatable', 'data', allow_duplicate=True),
