@@ -81,7 +81,7 @@ def readCSV2():
             elif str(i) == "Closed Recall":
                 closedStates.append(state)
  
-def readCSV():
+def readCSV2():
     with open("hicsv.csv", encoding = "utf8") as df:
         temp = pd.read_csv(df)
         for i in temp[temp.columns[23]]:
@@ -90,7 +90,24 @@ def readCSV():
                 activeStates.append(state)
             elif str(i) == "Closed Recall":
                 closedStates.append(state)
-
+                
+def readCSV():
+    with open("hicsv.csv", encoding = "utf8") as df:
+        temp = pd.read_csv(df)
+        #print(temp.columns)
+        x = temp.loc[:, "field_recall_type"]
+        #print(dir(x))
+        state = temp.loc[:, "field_states"]
+        #print(dir(y))
+        print(x, state)
+        for i in x:
+            if str(x[i].at['field_recall_type']) == 'Active Recall':
+                activeStates.append(state)
+            elif str(x[i].at['field_recall_type']) == 'Closed Recall':
+                closedStates.append(state)
+            elif str(x[i].at['field_recall_type']) == 'Public Health Alert':
+                continue
+                
 def writeActive():
     for x in activeStates:
         if type(x) != float:
@@ -101,7 +118,8 @@ def writeActive():
                     states[i][2] = x.count()
                     for stateName in x:
                         states[i][2] += 1
+                        
 
 readCSV()
-writeActive()
+#writeActive()
 print(states)

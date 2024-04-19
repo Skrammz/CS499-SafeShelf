@@ -36,11 +36,11 @@ closedMap = go.Figure(data=go.Choropleth(
 ))
 closedMap.update_layout(
     title_text = 'Closed Recalls per State<br><sup>Closed Nationwide Recalls: '+str(nationwideClosed),
-    geo_scope='usa', # limit map scope to USA
+    geo_scope='usa', # limite map scope to USA
 )
 
 df = pd.read_csv("data_file.csv")
-data = pd.read_csv("data_file.csv")
+data = pd.read_csv("recallsPerState.csv")
 
 colors = {
     'safeShelfGreen': '#00bf63'
