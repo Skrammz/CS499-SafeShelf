@@ -1,10 +1,6 @@
 import pandas as pd
 import pandas as pd
 
-nationWideActive = 0
-nationWideClosed = 0
-activeStates = []
-closedStates = []
 
 states = [
 ['Alabama','AL',0,0],
@@ -26,7 +22,6 @@ states = [
 ['Kansas','KS',0,0],
 ['Kentucky','KY',0,0],
 ['Louisiana','LA',0,0],
-
 ['Maine','ME',0,0],
 ['Maryland','MD',0,0],
 ['Massachusetts','MA',0,0],
@@ -63,8 +58,12 @@ states = [
 ['Washington','WA',0,0],
 ['West Virginia','WV',0,0],
 ['Wisconsin','WI',0,0],
-['Wyoming','WY',0,0],
-]
+['Wyoming','WY',0,0],]
+nationWideActive = 0
+nationWideClosed = 0
+activeStates = []
+closedStates = []
+
 
 def convert():
     with open("./hi.json") as f:
@@ -72,54 +71,58 @@ def convert():
         temp.to_csv("hicsv.csv", index=False)
 convert() 
                 
-def readCSV2():
-    with open("hicsv.csv") as df:
-        for i in df[df.columns[23]]:
-            state = df[df.columns[3]]
-            if str(i) == "Active Recall":
-                activeStates.append(state)
-            elif str(i) == "Closed Recall":
-                closedStates.append(state)
- 
-def readCSV2():
-    with open("hicsv.csv", encoding = "utf8") as df:
-        temp = pd.read_csv(df)
-        for i in temp[temp.columns[23]]:
-            state = temp[temp.columns[3]]
-            if str(i) == "Active Recall":
-                activeStates.append(state)
-            elif str(i) == "Closed Recall":
-                closedStates.append(state)
-                
+
 def readCSV():
     with open("hicsv.csv", encoding = "utf8") as df:
         temp = pd.read_csv(df)
-        #print(temp.columns)
-        x = temp.loc[:, "field_recall_type"]
-        #print(dir(x))
+        types = temp.loc[:, "field_recall_type"]
         state = temp.loc[:, "field_states"]
-        #print(dir(y))
-        print(x, state)
-        for i in x:
-            if str(x[i].at['field_recall_type']) == 'Active Recall':
-                activeStates.append(state)
-            elif str(x[i].at['field_recall_type']) == 'Closed Recall':
-                closedStates.append(state)
-            elif str(x[i].at['field_recall_type']) == 'Public Health Alert':
+        #print(types)
+        for i in range(len(types)):
+            if types[i] == 'Active Recall':
+                if type(state[i]) != float:
+                    activeStates.append(state[i].split(","))
+                else:
+                    continue
+            elif types[i] == 'Closed Recall':
+                if type(state[i]) != float:
+                    closedStates.append(state[i].split(","))
+                else:
+                    continue
+            elif types[i] == 'Public Health Alert':
                 continue
-                
 def writeActive():
+    nationWideActive = 0
     for x in activeStates:
         if type(x) != float:
-            if "Nationwide" in x:
+            if "Nationwide" == x[0]:
                 nationWideActive += 1
             else:
+                tempNumb = 0
                 for i in range(len(states)):
-                    states[i][2] = x.count()
-                    for stateName in x:
+                    stateName = states[i][0]
+                    if stateName in x:
                         states[i][2] += 1
-                        
+    return nationWideActive
+def writeClosed():
+    nationWideClosed = 0
+    for x in closedStates:
+        if type(x) != float:
+            if "Nationwide" == x[0]:
+                nationWideClosed += 1
+            else:
+                tempNumb = 0
+                for i in range(len(states)):
+                    stateName = states[i][0]
+                    if stateName in x:
+                        states[i][3] += 1
+    return nationWideClosed
 
+
+
+#print(closedStates)
 readCSV()
-#writeActive()
+print(writeActive())
+print(writeClosed())
+writeClosed()
 print(states)
