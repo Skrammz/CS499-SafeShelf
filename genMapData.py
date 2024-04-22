@@ -2,6 +2,7 @@ import pandas as pd
 import pandas as pd
 
 states = [
+['Nationwide','USA',0,0],
 ['Alabama','AL',0,0],
 ['Alaska','AK',0,0],
 ['Arizona','AZ',0,0],
@@ -58,6 +59,8 @@ states = [
 ['West Virginia','WV',0,0],
 ['Wisconsin','WI',0,0],
 ['Wyoming','WY',0,0],]
+global nationWideActive
+global nationWideClosed
 nationWideActive = 0
 nationWideClosed = 0
 activeStates = []
@@ -68,26 +71,52 @@ def convert():
         temp = pd.read_json(f)
         temp.to_csv("hicsv.csv", index=False)
 convert() 
-                
+
+def getStateIndex(state): 
+  for i in range(len(states)):
+    if str(state).strip() == str(states[i][0]):
+      return i
+  print(state)
+  return -1
+  
+
 def readCSV():
+  
     with open("hicsv.csv", encoding = "utf8") as df:
         temp = pd.read_csv(df)
         types = temp.loc[:, "field_recall_type"]
-        state = temp.loc[:, "field_states"]
+        stateList = temp.loc[:, "field_states"]
         #print(types)
+        print(len(types))
+        print(len(stateList))
+        floatEntries = 0
+        zeroLength = 0
         for i in range(len(types)):
             if types[i] == 'Active Recall':
-                if type(state[i]) != float:
-                    activeStates.append(state[i].split(","))
-                else:
+                if type(stateList[i]) != float:
+                  statesGot = stateList[i].split(",")
+                  if len(statesGot) == 0: 
+                    zeroLength += 1
+                  for j in range(len(statesGot)):
+                      index = getStateIndex(statesGot[j])
+                      states[index][2] += 1          
+                else:         
+                    floatEntries += 1
                     continue
             elif types[i] == 'Closed Recall':
-                if type(state[i]) != float:
-                    closedStates.append(state[i].split(","))
-                else:
-                    continue
-            elif types[i] == 'Public Health Alert':
-                continue
+              if type(stateList[i]) != float:
+                statesGot = stateList[i].split(",")
+                if len(statesGot) == 0: 
+                  zeroLength += 1
+                for j in range(len(statesGot)):
+                    index = getStateIndex(statesGot[j])
+                    states[index][3] += 1          
+              else:         
+                  floatEntries += 1
+                  continue
+              
+        print(floatEntries)
+        print(zeroLength)
 def writeActive():
     nationWideActive = 0
     for x in activeStates:
@@ -119,6 +148,9 @@ def writeClosed():
 
 #print(closedStates)
 readCSV()
-writeActive()
-writeClosed()
+#writeActive()
+#writeClosed()
+with open("mapData.csv", "w") as f:
+  data = pd.DataFrame(states)
+  data.to_csv(f, index=False)
 print(states)
