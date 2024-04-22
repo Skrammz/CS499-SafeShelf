@@ -1,2 +1,41 @@
-Test
-User Manual
+SafeShelf User Manual 
+About SafeShelf 
+SafeShelf is a web application designed to make public health information about recalled or unsafe products accessible. SafeShelf utilizes current data from the USDA’s FSIS (Food Safety and Inspection Service) through its published API containing active and closed recalls. While information is currently published by the USDA on their departmental website, FSIS recalls are not legally mandated. Manufacturers must choose to actively work with the organization to contain any health hazards. SafeShelf believes that consumers have the right to access information regarding safety concerns about the food products they buy. 
+ 
+Features 
+Overview 
+SafeShelf uses the FSIS Recall API to populate a sortable data table listing each recalled product along with the reason for the recall, company, states a	ected, and date issued. 
+Alongside this table, an interactive map of the United States displays the number of recalls in each state, assigning states colors according to the scale to the right of the map. By selecting the ActiveMap or ClosedMap tab, users can toggle between viewing data for active recalls and closed recalls. Selecting a state in the map allows the user to view only recall data for their selected state.
+ 
+ 
+ 
+Quick Guide 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Interactive Maps 
+Active Map – Active Recall Data
+
+ 	 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Closed Map – Closed Recall Data 
+All features for the closed recalls map are the same as the active recalls map.  
+The color scale and data are di	erent, as shown in the diagram below.
+ 
+ 
+ 
+ 
+ 
+ 
