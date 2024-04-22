@@ -1,7 +1,6 @@
 import pandas as pd
 import pandas as pd
 
-
 states = [
 ['Alabama','AL',0,0],
 ['Alaska','AK',0,0],
@@ -64,14 +63,12 @@ nationWideClosed = 0
 activeStates = []
 closedStates = []
 
-
 def convert():
     with open("./hi.json") as f:
         temp = pd.read_json(f)
         temp.to_csv("hicsv.csv", index=False)
 convert() 
                 
-
 def readCSV():
     with open("hicsv.csv", encoding = "utf8") as df:
         temp = pd.read_csv(df)
