@@ -76,9 +76,9 @@ convert()
 
 def getStateIndex(state): 
   for i in range(len(states)):
-    if state == states[i][0]:
+    if str(state).strip() == str(states[i][0]):
       return i
-
+  print(state)
   return -1
   
 def readCSV():
