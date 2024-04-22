@@ -109,12 +109,6 @@ app.layout = html.Div(
                         ]), width={'size':6},
                     ),
             ]),
-        dbc.Row([
-            html.Div(children=[dbc.Button("Need Help? Download the User Manual", 
-                    color="link", href="SafeShelf Logo.png", download="SafeShelf Logo.png",
-                    external_link= True,),
-                ])
-            ]),
     ]), style={'width': '100%', 'display': 'block'},
 )
 

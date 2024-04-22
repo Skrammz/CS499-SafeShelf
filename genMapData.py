@@ -1,7 +1,6 @@
 import pandas as pd
 import pandas as pd
 
-
 states = [
 ['Nationwide','USA',0,0],
 ['Alabama','AL',0,0],
@@ -67,7 +66,6 @@ nationWideClosed = 0
 activeStates = []
 closedStates = []
 
-
 def convert():
     with open("./hi.json") as f:
         temp = pd.read_json(f)
@@ -81,6 +79,7 @@ def getStateIndex(state):
   print(state)
   return -1
   
+
 def readCSV():
   
     with open("hicsv.csv", encoding = "utf8") as df:
