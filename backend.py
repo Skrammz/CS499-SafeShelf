@@ -22,7 +22,7 @@ def nameChange():
                 data = pd.read_json(f)
                 header_mapping = {'field_title': 'Title',
                                   'field_last_modified_date' : 'Date Issued',
-                                  'field_active_notice': 'Recall Status',
+                                  'field_recall_type': 'Recall Status',
                                   'field_states': 'States',
                                   'field_establishment': 'Company',
                                   'field_recall_classification': 'Recall Classification',
@@ -35,7 +35,7 @@ def nameChange():
                                   "field_press_release", "field_processing",
                                   "field_product_items", "field_qty_recovered",
                                   "field_closed_date", "field_recall_number",
-                                  "field_recall_type", "field_related_to_outbreak",
+                                  "field_active_notice", "field_related_to_outbreak",
                                   "field_summary", "field_year", "langcode",
                                   "field_has_spanish", "field_risk_level"], axis = 1)
                 data = data.rename(columns = header_mapping)
